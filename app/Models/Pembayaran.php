@@ -37,7 +37,7 @@ class Pembayaran extends Model
 
     public function pelanggan(): BelongsTo
     {
-        return $this->belongsTo(Pelanggan::class);
+        return $this->belongsTo(Pelanggan::class, 'pelanggan_id', 'pelanggan_id');
     }
 
     public function diverifikasiOleh(): BelongsTo

@@ -25,7 +25,7 @@
                                 <select id="pelanggan_id" name="pelanggan_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                                     <option value="">Pilih Pelanggan</option>
                                     @foreach($pelanggan as $p)
-                                        <option value="{{ $p->id }}" {{ old('pelanggan_id') == $p->id ? 'selected' : '' }}>
+                                        <option value="{{ $p->pelanggan_id }}" {{ old('pelanggan_id') == $p->pelanggan_id ? 'selected' : '' }}>
                                             {{ $p->user->name }} - {{ $p->paket->nama_paket }}
                                         </option>
                                     @endforeach

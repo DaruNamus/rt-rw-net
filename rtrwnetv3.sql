@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 07, 2025 at 12:02 AM
+-- Generation Time: Nov 15, 2025 at 06:29 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.16
 
@@ -120,7 +120,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (5, '2025_11_06_204640_create_pelanggan_table', 1),
 (6, '2025_11_06_204642_create_tagihan_table', 1),
 (7, '2025_11_06_204644_create_pembayaran_table', 1),
-(8, '2025_11_06_204646_create_permintaan_upgrade_table', 1);
+(8, '2025_11_06_204646_create_permintaan_upgrade_table', 1),
+(9, '2025_11_15_061604_add_pelanggan_id_to_pelanggan_table', 2),
+(10, '2025_11_15_061614_update_foreign_keys_for_pelanggan_id', 3),
+(11, '2025_11_15_062203_fix_pelanggan_primary_key', 3);
 
 -- --------------------------------------------------------
 
@@ -167,9 +170,7 @@ CREATE TABLE `password_reset_tokens` (
 --
 
 CREATE TABLE `pelanggan` (
-  `id` bigint UNSIGNED NOT NULL,
-  `user_id` bigint UNSIGNED NOT NULL,
-  `paket_id` bigint UNSIGNED NOT NULL,
+  `pelanggan_id` varchar(10) NOT NULL,
   `alamat` text NOT NULL,
   `no_telepon` varchar(255) NOT NULL,
   `tanggal_pemasangan` date NOT NULL,
@@ -182,10 +183,10 @@ CREATE TABLE `pelanggan` (
 -- Dumping data for table `pelanggan`
 --
 
-INSERT INTO `pelanggan` (`id`, `user_id`, `paket_id`, `alamat`, `no_telepon`, `tanggal_pemasangan`, `status`, `created_at`, `updated_at`) VALUES
-(1, 2, 2, 'Pasuruan Lor RT01/01 No.01', '088811132347', '2025-11-06', 'aktif', '2025-11-06 14:10:47', '2025-11-06 15:15:42'),
-(2, 3, 1, 'Ds. Bacin, RT 02/04 No.12', '082331331331', '2025-11-01', 'aktif', '2025-11-06 15:36:46', '2025-11-06 15:36:46'),
-(3, 4, 1, 'Ds. Jepangpakis, RT03/02, No.31', '083277777333', '2025-11-06', 'aktif', '2025-11-06 16:47:18', '2025-11-06 16:49:40');
+INSERT INTO `pelanggan` (`pelanggan_id`, `alamat`, `no_telepon`, `tanggal_pemasangan`, `status`, `created_at`, `updated_at`) VALUES
+('122', 'Pasuruan Lor RT01/01 No.01', '088811132347', '2025-11-06', 'aktif', '2025-11-06 14:10:47', '2025-11-06 15:15:42'),
+('231', 'Ds. Bacin, RT 02/04 No.12', '082331331331', '2025-11-01', 'aktif', '2025-11-06 15:36:46', '2025-11-06 15:36:46'),
+('341', 'Ds. Jepangpakis, RT03/02, No.31', '083277777333', '2025-11-06', 'aktif', '2025-11-06 16:47:18', '2025-11-06 16:49:40');
 
 -- --------------------------------------------------------
 
@@ -196,7 +197,7 @@ INSERT INTO `pelanggan` (`id`, `user_id`, `paket_id`, `alamat`, `no_telepon`, `t
 CREATE TABLE `pembayaran` (
   `id` bigint UNSIGNED NOT NULL,
   `tagihan_id` bigint UNSIGNED NOT NULL,
-  `pelanggan_id` bigint UNSIGNED NOT NULL,
+  `pelanggan_id` varchar(10) NOT NULL,
   `jumlah_bayar` decimal(12,2) NOT NULL,
   `tanggal_bayar` date DEFAULT NULL,
   `bukti_pembayaran` varchar(255) DEFAULT NULL,
@@ -213,9 +214,9 @@ CREATE TABLE `pembayaran` (
 --
 
 INSERT INTO `pembayaran` (`id`, `tagihan_id`, `pelanggan_id`, `jumlah_bayar`, `tanggal_bayar`, `bukti_pembayaran`, `status`, `catatan_admin`, `diverifikasi_oleh`, `diverifikasi_pada`, `created_at`, `updated_at`) VALUES
-(1, 2, 1, '250000.00', '2025-11-06', 'bukti_pembayaran/dGbLqXsY1djYQpQKRCYA5IB65ezeOHrv71mDwKeP.png', 'lunas', NULL, 1, '2025-11-06 15:06:17', '2025-11-06 14:31:57', '2025-11-06 15:06:17'),
-(2, 2, 1, '250000.00', '2025-11-06', 'bukti_pembayaran/A07jMJmOLEklZAfWqjIfkhmC0P9145rkmZDPIQn5.png', 'menunggu_verifikasi', NULL, NULL, NULL, '2025-11-06 14:46:05', '2025-11-06 14:46:05'),
-(3, 5, 3, '400000.00', '2025-11-06', 'bukti_pembayaran/GT1lgrWg5EyJ0Resj6hLguqdeHdN9PUnA1MAJgX4.png', 'lunas', NULL, 1, '2025-11-06 16:49:27', '2025-11-06 16:48:44', '2025-11-06 16:49:27');
+(1, 2, '122', '250000.00', '2025-11-06', 'bukti_pembayaran/dGbLqXsY1djYQpQKRCYA5IB65ezeOHrv71mDwKeP.png', 'lunas', NULL, 1, '2025-11-06 15:06:17', '2025-11-06 14:31:57', '2025-11-06 15:06:17'),
+(2, 2, '122', '250000.00', '2025-11-06', 'bukti_pembayaran/A07jMJmOLEklZAfWqjIfkhmC0P9145rkmZDPIQn5.png', 'menunggu_verifikasi', NULL, NULL, NULL, '2025-11-06 14:46:05', '2025-11-06 14:46:05'),
+(3, 5, '341', '400000.00', '2025-11-06', 'bukti_pembayaran/GT1lgrWg5EyJ0Resj6hLguqdeHdN9PUnA1MAJgX4.png', 'lunas', NULL, 1, '2025-11-06 16:49:27', '2025-11-06 16:48:44', '2025-11-06 16:49:27');
 
 -- --------------------------------------------------------
 
@@ -225,7 +226,7 @@ INSERT INTO `pembayaran` (`id`, `tagihan_id`, `pelanggan_id`, `jumlah_bayar`, `t
 
 CREATE TABLE `permintaan_upgrade` (
   `id` bigint UNSIGNED NOT NULL,
-  `pelanggan_id` bigint UNSIGNED NOT NULL,
+  `pelanggan_id` varchar(10) NOT NULL,
   `paket_lama_id` bigint UNSIGNED NOT NULL,
   `paket_baru_id` bigint UNSIGNED NOT NULL,
   `status` enum('menunggu','disetujui','ditolak') NOT NULL DEFAULT 'menunggu',
@@ -242,8 +243,8 @@ CREATE TABLE `permintaan_upgrade` (
 --
 
 INSERT INTO `permintaan_upgrade` (`id`, `pelanggan_id`, `paket_lama_id`, `paket_baru_id`, `status`, `alasan`, `catatan_admin`, `diproses_oleh`, `diproses_pada`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 2, 'disetujui', NULL, NULL, 1, '2025-11-06 15:15:42', '2025-11-06 15:11:55', '2025-11-06 15:15:42'),
-(2, 3, 2, 1, 'disetujui', NULL, NULL, 1, '2025-11-06 16:49:40', '2025-11-06 16:48:58', '2025-11-06 16:49:40');
+(1, '122', 1, 2, 'disetujui', NULL, NULL, 1, '2025-11-06 15:15:42', '2025-11-06 15:11:55', '2025-11-06 15:15:42'),
+(2, '341', 2, 1, 'disetujui', NULL, NULL, 1, '2025-11-06 16:49:40', '2025-11-06 16:48:58', '2025-11-06 16:49:40');
 
 -- --------------------------------------------------------
 
@@ -265,7 +266,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('gWtP3gT1VYGXH9cbkqXapEnAu5n1FDA6p0rEsA49', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMnExWEpqVmR3NENxRzF3VDQzWkltNTlZVnVSZjdORnRnT0cxQ2xUeSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1762473418);
+('gWtP3gT1VYGXH9cbkqXapEnAu5n1FDA6p0rEsA49', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMnExWEpqVmR3NENxRzF3VDQzWkltNTlZVnVSZjdORnRnT0cxQ2xUeSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1762473418),
+('pTqvwPAImojOGFFnaud4kZr4zAIw3hlOq2TvvU32', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiY3Vac0p1RXZOcE1BdXpXSG0wUzFzcTFoQ1lmd3dZY1hDSGxnd1Z3byI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyMToiaHR0cDovLzEyNy4wLjAuMTo4MDAwIjt9czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fX0=', 1763188043);
 
 -- --------------------------------------------------------
 
@@ -275,7 +277,7 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 
 CREATE TABLE `tagihan` (
   `id` bigint UNSIGNED NOT NULL,
-  `pelanggan_id` bigint UNSIGNED NOT NULL,
+  `pelanggan_id` varchar(10) NOT NULL,
   `paket_id` bigint UNSIGNED NOT NULL,
   `bulan` int NOT NULL,
   `tahun` int NOT NULL,
@@ -293,12 +295,12 @@ CREATE TABLE `tagihan` (
 --
 
 INSERT INTO `tagihan` (`id`, `pelanggan_id`, `paket_id`, `bulan`, `tahun`, `jumlah_tagihan`, `status`, `tanggal_jatuh_tempo`, `jenis_tagihan`, `keterangan`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 11, 2025, '350000.00', 'belum_bayar', '2025-11-13', 'pemasangan', 'Tagihan pemasangan pertama', '2025-11-06 14:10:47', '2025-11-06 14:10:47'),
-(2, 1, 1, 12, 2025, '250000.00', 'lunas', '2025-12-07', 'bulanan', NULL, '2025-11-06 14:22:39', '2025-11-06 15:06:17'),
-(3, 1, 2, 11, 2025, '50000.00', 'belum_bayar', '2025-11-13', 'upgrade', 'Tagihan upgrade dari Paket Hemat ke Paket Keluarga', '2025-11-06 15:15:42', '2025-11-06 15:15:42'),
-(4, 2, 1, 11, 2025, '350000.00', 'belum_bayar', '2025-11-08', 'pemasangan', 'Tagihan pemasangan pertama', '2025-11-06 15:36:46', '2025-11-06 15:36:46'),
-(5, 3, 2, 11, 2025, '400000.00', 'lunas', '2025-11-13', 'pemasangan', 'Tagihan pemasangan pertama', '2025-11-06 16:47:18', '2025-11-06 16:49:27'),
-(6, 3, 1, 11, 2025, '0.00', 'lunas', '2025-11-13', 'upgrade', 'Tagihan upgrade dari Paket Keluarga ke Paket Hemat', '2025-11-06 16:49:40', '2025-11-06 16:56:14');
+(1, '122', 1, 11, 2025, '350000.00', 'belum_bayar', '2025-11-13', 'pemasangan', 'Tagihan pemasangan pertama', '2025-11-06 14:10:47', '2025-11-06 14:10:47'),
+(2, '122', 1, 12, 2025, '250000.00', 'lunas', '2025-12-07', 'bulanan', NULL, '2025-11-06 14:22:39', '2025-11-06 15:06:17'),
+(3, '122', 2, 11, 2025, '50000.00', 'belum_bayar', '2025-11-13', 'upgrade', 'Tagihan upgrade dari Paket Hemat ke Paket Keluarga', '2025-11-06 15:15:42', '2025-11-06 15:15:42'),
+(4, '231', 1, 11, 2025, '350000.00', 'belum_bayar', '2025-11-08', 'pemasangan', 'Tagihan pemasangan pertama', '2025-11-06 15:36:46', '2025-11-06 15:36:46'),
+(5, '341', 2, 11, 2025, '400000.00', 'lunas', '2025-11-13', 'pemasangan', 'Tagihan pemasangan pertama', '2025-11-06 16:47:18', '2025-11-06 16:49:27'),
+(6, '341', 1, 11, 2025, '0.00', 'lunas', '2025-11-13', 'upgrade', 'Tagihan upgrade dari Paket Keluarga ke Paket Hemat', '2025-11-06 16:49:40', '2025-11-06 16:56:14');
 
 -- --------------------------------------------------------
 
@@ -386,9 +388,8 @@ ALTER TABLE `password_reset_tokens`
 -- Indexes for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `pelanggan_user_id_foreign` (`user_id`),
-  ADD KEY `pelanggan_paket_id_foreign` (`paket_id`);
+  ADD PRIMARY KEY (`pelanggan_id`),
+  ADD UNIQUE KEY `pelanggan_pelanggan_id_unique` (`pelanggan_id`);
 
 --
 -- Indexes for table `pembayaran`
@@ -452,19 +453,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `paket`
 --
 ALTER TABLE `paket`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `pelanggan`
---
-ALTER TABLE `pelanggan`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pembayaran`
@@ -495,18 +490,11 @@ ALTER TABLE `users`
 --
 
 --
--- Constraints for table `pelanggan`
---
-ALTER TABLE `pelanggan`
-  ADD CONSTRAINT `pelanggan_paket_id_foreign` FOREIGN KEY (`paket_id`) REFERENCES `paket` (`id`) ON DELETE RESTRICT,
-  ADD CONSTRAINT `pelanggan_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
 -- Constraints for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   ADD CONSTRAINT `pembayaran_diverifikasi_oleh_foreign` FOREIGN KEY (`diverifikasi_oleh`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `pembayaran_pelanggan_id_foreign` FOREIGN KEY (`pelanggan_id`) REFERENCES `pelanggan` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `pembayaran_pelanggan_id_foreign` FOREIGN KEY (`pelanggan_id`) REFERENCES `pelanggan` (`pelanggan_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `pembayaran_tagihan_id_foreign` FOREIGN KEY (`tagihan_id`) REFERENCES `tagihan` (`id`) ON DELETE CASCADE;
 
 --
@@ -516,14 +504,14 @@ ALTER TABLE `permintaan_upgrade`
   ADD CONSTRAINT `permintaan_upgrade_diproses_oleh_foreign` FOREIGN KEY (`diproses_oleh`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `permintaan_upgrade_paket_baru_id_foreign` FOREIGN KEY (`paket_baru_id`) REFERENCES `paket` (`id`) ON DELETE RESTRICT,
   ADD CONSTRAINT `permintaan_upgrade_paket_lama_id_foreign` FOREIGN KEY (`paket_lama_id`) REFERENCES `paket` (`id`) ON DELETE RESTRICT,
-  ADD CONSTRAINT `permintaan_upgrade_pelanggan_id_foreign` FOREIGN KEY (`pelanggan_id`) REFERENCES `pelanggan` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `permintaan_upgrade_pelanggan_id_foreign` FOREIGN KEY (`pelanggan_id`) REFERENCES `pelanggan` (`pelanggan_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `tagihan`
 --
 ALTER TABLE `tagihan`
   ADD CONSTRAINT `tagihan_paket_id_foreign` FOREIGN KEY (`paket_id`) REFERENCES `paket` (`id`) ON DELETE RESTRICT,
-  ADD CONSTRAINT `tagihan_pelanggan_id_foreign` FOREIGN KEY (`pelanggan_id`) REFERENCES `pelanggan` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `tagihan_pelanggan_id_foreign` FOREIGN KEY (`pelanggan_id`) REFERENCES `pelanggan` (`pelanggan_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

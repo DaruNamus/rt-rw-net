@@ -18,14 +18,14 @@ class PembayaranController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
                 ->with('error', 'Data pelanggan tidak ditemukan.');
         }
 
-        $pembayaran = Pembayaran::where('pelanggan_id', $pelanggan->id)
+        $pembayaran = Pembayaran::where('pelanggan_id', $pelanggan->pelanggan_id)
             ->with(['tagihan.paket'])
             ->latest()
             ->paginate(15);
@@ -39,9 +39,9 @@ class PembayaranController extends Controller
     public function create(Tagihan $tagihan)
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
-        if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->id) {
+        if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->pelanggan_id) {
             return redirect()->route('pelanggan.tagihan.index')
                 ->with('error', 'Tagihan tidak ditemukan.');
         }
@@ -63,9 +63,9 @@ class PembayaranController extends Controller
     public function store(Request $request, Tagihan $tagihan)
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
-        if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->id) {
+        if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->pelanggan_id) {
             return redirect()->route('pelanggan.tagihan.index')
                 ->with('error', 'Tagihan tidak ditemukan.');
         }
@@ -86,7 +86,7 @@ class PembayaranController extends Controller
         // Buat pembayaran
         Pembayaran::create([
             'tagihan_id' => $tagihan->id,
-            'pelanggan_id' => $pelanggan->id,
+            'pelanggan_id' => $pelanggan->pelanggan_id,
             'jumlah_bayar' => $validated['jumlah_bayar'],
             'tanggal_bayar' => $validated['tanggal_bayar'],
             'bukti_pembayaran' => $validated['bukti_pembayaran'],

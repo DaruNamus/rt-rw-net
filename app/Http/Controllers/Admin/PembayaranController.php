@@ -17,7 +17,7 @@ class PembayaranController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Pembayaran::with(['pelanggan.user', 'tagihan.paket', 'diverifikasiOleh']);
+        $query = Pembayaran::with(['pelanggan', 'tagihan.paket', 'diverifikasiOleh']);
 
         // Filter berdasarkan status
         if ($request->filled('status')) {
@@ -28,6 +28,13 @@ class PembayaranController extends Controller
         }
 
         $pembayaran = $query->latest()->paginate(15);
+        
+        // Load user untuk setiap pelanggan secara manual
+        foreach ($pembayaran as $p) {
+            if ($p->pelanggan) {
+                $p->pelanggan->user = $p->pelanggan->getUser();
+            }
+        }
 
         return view('admin.pembayaran.index', compact('pembayaran'));
     }
@@ -37,7 +44,10 @@ class PembayaranController extends Controller
      */
     public function show(Pembayaran $pembayaran)
     {
-        $pembayaran->load(['pelanggan.user', 'tagihan.paket', 'diverifikasiOleh']);
+        $pembayaran->load(['pelanggan', 'tagihan.paket', 'diverifikasiOleh']);
+        if ($pembayaran->pelanggan) {
+            $pembayaran->pelanggan->user = $pembayaran->pelanggan->getUser();
+        }
         return view('admin.pembayaran.show', compact('pembayaran'));
     }
 

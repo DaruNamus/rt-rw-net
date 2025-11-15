@@ -17,7 +17,7 @@ class PermintaanUpgradeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PermintaanUpgrade::with(['pelanggan.user', 'paketLama', 'paketBaru', 'diprosesOleh']);
+        $query = PermintaanUpgrade::with(['pelanggan', 'paketLama', 'paketBaru', 'diprosesOleh']);
 
         // Filter berdasarkan status
         if ($request->filled('status')) {
@@ -28,6 +28,13 @@ class PermintaanUpgradeController extends Controller
         }
 
         $permintaanUpgrade = $query->latest()->paginate(15);
+        
+        // Load user untuk setiap pelanggan secara manual
+        foreach ($permintaanUpgrade as $pu) {
+            if ($pu->pelanggan) {
+                $pu->pelanggan->user = $pu->pelanggan->getUser();
+            }
+        }
 
         return view('admin.permintaan-upgrade.index', compact('permintaanUpgrade'));
     }
@@ -37,7 +44,10 @@ class PermintaanUpgradeController extends Controller
      */
     public function show(PermintaanUpgrade $permintaanUpgrade)
     {
-        $permintaanUpgrade->load(['pelanggan.user', 'paketLama', 'paketBaru', 'diprosesOleh']);
+        $permintaanUpgrade->load(['pelanggan', 'paketLama', 'paketBaru', 'diprosesOleh']);
+        if ($permintaanUpgrade->pelanggan) {
+            $permintaanUpgrade->pelanggan->user = $permintaanUpgrade->pelanggan->getUser();
+        }
         return view('admin.permintaan-upgrade.show', compact('permintaanUpgrade'));
     }
 
@@ -52,10 +62,15 @@ class PermintaanUpgradeController extends Controller
 
         DB::beginTransaction();
         try {
-            // Update paket pelanggan
+            // Update paket pelanggan dengan generate pelanggan_id baru
             $pelanggan = $permintaanUpgrade->pelanggan;
+            $user = $pelanggan->getUser();
+            
+            // Generate pelanggan_id baru karena paket berubah
+            $pelangganIdBaru = Pelanggan::generatePelangganId($user->id, $permintaanUpgrade->paket_baru_id);
+            
             $pelanggan->update([
-                'paket_id' => $permintaanUpgrade->paket_baru_id,
+                'pelanggan_id' => $pelangganIdBaru,
             ]);
 
             // Buat tagihan upgrade
@@ -67,7 +82,7 @@ class PermintaanUpgradeController extends Controller
             $tahunSekarang = now()->year;
             
             Tagihan::create([
-                'pelanggan_id' => $pelanggan->id,
+                'pelanggan_id' => $pelanggan->pelanggan_id,
                 'paket_id' => $permintaanUpgrade->paket_baru_id,
                 'bulan' => $bulanSekarang,
                 'tahun' => $tahunSekarang,

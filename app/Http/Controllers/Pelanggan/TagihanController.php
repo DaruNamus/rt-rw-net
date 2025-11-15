@@ -16,14 +16,14 @@ class TagihanController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
                 ->with('error', 'Data pelanggan tidak ditemukan.');
         }
 
-        $tagihan = Tagihan::where('pelanggan_id', $pelanggan->id)
+        $tagihan = Tagihan::where('pelanggan_id', $pelanggan->pelanggan_id)
             ->with(['paket'])
             ->latest()
             ->paginate(15);
@@ -37,9 +37,9 @@ class TagihanController extends Controller
     public function show(Tagihan $tagihan)
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
-        if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->id) {
+        if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->pelanggan_id) {
             return redirect()->route('pelanggan.tagihan.index')
                 ->with('error', 'Tagihan tidak ditemukan.');
         }

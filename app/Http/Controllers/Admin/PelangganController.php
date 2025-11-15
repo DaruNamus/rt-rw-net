@@ -19,7 +19,14 @@ class PelangganController extends Controller
      */
     public function index()
     {
-        $pelanggan = Pelanggan::with(['user', 'paket'])->latest()->paginate(10);
+        $pelanggan = Pelanggan::latest()->paginate(10);
+        
+        // Load user dan paket secara manual karena tidak ada foreign key
+        foreach ($pelanggan as $p) {
+            $p->user = $p->getUser();
+            $p->paket = $p->getPaket();
+        }
+        
         return view('admin.pelanggan.index', compact('pelanggan'));
     }
 
@@ -58,10 +65,12 @@ class PelangganController extends Controller
                 'role' => 'pelanggan',
             ]);
 
+            // Generate pelanggan_id
+            $pelangganId = Pelanggan::generatePelangganId($user->id, $validated['paket_id']);
+
             // Buat data pelanggan
             $pelanggan = Pelanggan::create([
-                'user_id' => $user->id,
-                'paket_id' => $validated['paket_id'],
+                'pelanggan_id' => $pelangganId,
                 'alamat' => $validated['alamat'],
                 'no_telepon' => $validated['no_telepon'],
                 'tanggal_pemasangan' => $validated['tanggal_pemasangan'],
@@ -73,7 +82,7 @@ class PelangganController extends Controller
             $totalTagihan = $paket->harga_pemasangan + $paket->harga_bulanan;
             
             Tagihan::create([
-                'pelanggan_id' => $pelanggan->id,
+                'pelanggan_id' => $pelanggan->pelanggan_id,
                 'paket_id' => $validated['paket_id'],
                 'bulan' => Carbon::parse($validated['tanggal_pemasangan'])->month,
                 'tahun' => Carbon::parse($validated['tanggal_pemasangan'])->year,
@@ -101,7 +110,10 @@ class PelangganController extends Controller
      */
     public function show(Pelanggan $pelanggan)
     {
-        $pelanggan->load(['user', 'paket', 'tagihan', 'pembayaran']);
+        // Load user dan paket secara manual
+        $pelanggan->user = $pelanggan->getUser();
+        $pelanggan->paket = $pelanggan->getPaket();
+        $pelanggan->load(['tagihan', 'pembayaran']);
         return view('admin.pelanggan.show', compact('pelanggan'));
     }
 
@@ -111,7 +123,8 @@ class PelangganController extends Controller
     public function edit(Pelanggan $pelanggan)
     {
         $paket = Paket::where('status', 'aktif')->get();
-        $pelanggan->load('user');
+        // Load user secara manual
+        $pelanggan->user = $pelanggan->getUser();
         return view('admin.pelanggan.edit', compact('pelanggan', 'paket'));
     }
 
@@ -133,6 +146,9 @@ class PelangganController extends Controller
 
         DB::beginTransaction();
         try {
+            // Get user
+            $user = $pelanggan->getUser();
+            
             // Update user
             $userData = [
                 'name' => $validated['name'],
@@ -143,16 +159,28 @@ class PelangganController extends Controller
                 $userData['password'] = Hash::make($validated['password']);
             }
 
-            $pelanggan->user->update($userData);
+            $user->update($userData);
 
-            // Update pelanggan
-            $pelanggan->update([
-                'paket_id' => $validated['paket_id'],
-                'alamat' => $validated['alamat'],
-                'no_telepon' => $validated['no_telepon'],
-                'tanggal_pemasangan' => $validated['tanggal_pemasangan'],
-                'status' => $validated['status'],
-            ]);
+            // Jika paket berubah, generate pelanggan_id baru
+            $paketLama = $pelanggan->paket_id;
+            if ($paketLama != $validated['paket_id']) {
+                $pelangganIdBaru = Pelanggan::generatePelangganId($user->id, $validated['paket_id']);
+                $pelanggan->update([
+                    'pelanggan_id' => $pelangganIdBaru,
+                    'alamat' => $validated['alamat'],
+                    'no_telepon' => $validated['no_telepon'],
+                    'tanggal_pemasangan' => $validated['tanggal_pemasangan'],
+                    'status' => $validated['status'],
+                ]);
+            } else {
+                // Update pelanggan tanpa mengubah pelanggan_id
+                $pelanggan->update([
+                    'alamat' => $validated['alamat'],
+                    'no_telepon' => $validated['no_telepon'],
+                    'tanggal_pemasangan' => $validated['tanggal_pemasangan'],
+                    'status' => $validated['status'],
+                ]);
+            }
 
             DB::commit();
 
@@ -179,9 +207,11 @@ class PelangganController extends Controller
             $pelanggan->permintaanUpgrade()->delete();
             
             // Hapus user dan pelanggan
-            $user = $pelanggan->user;
+            $user = $pelanggan->getUser();
             $pelanggan->delete();
-            $user->delete();
+            if ($user) {
+                $user->delete();
+            }
 
             DB::commit();
 

@@ -13,23 +13,23 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
         if (!$pelanggan) {
             return redirect()->route('profile.edit')->with('error', 'Data pelanggan tidak ditemukan. Silakan hubungi admin untuk melengkapi data pelanggan Anda.');
         }
 
-        $tagihanBulanIni = Tagihan::where('pelanggan_id', $pelanggan->id)
+        $tagihanBulanIni = Tagihan::where('pelanggan_id', $pelanggan->pelanggan_id)
             ->where('status', 'belum_bayar')
             ->whereMonth('tanggal_jatuh_tempo', now()->month)
             ->whereYear('tanggal_jatuh_tempo', now()->year)
             ->first();
 
-        $totalTagihanBelumBayar = Tagihan::where('pelanggan_id', $pelanggan->id)
+        $totalTagihanBelumBayar = Tagihan::where('pelanggan_id', $pelanggan->pelanggan_id)
             ->where('status', 'belum_bayar')
             ->count();
 
-        $pembayaranTerbaru = Pembayaran::where('pelanggan_id', $pelanggan->id)
+        $pembayaranTerbaru = Pembayaran::where('pelanggan_id', $pelanggan->pelanggan_id)
             ->with('tagihan')
             ->latest()
             ->take(5)

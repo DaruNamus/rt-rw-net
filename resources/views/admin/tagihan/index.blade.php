@@ -50,7 +50,7 @@
                             <select name="pelanggan_id" class="block w-full text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm py-2">
                                 <option value="">Semua Pelanggan</option>
                                 @foreach($pelanggan as $p)
-                                    <option value="{{ $p->id }}" {{ request('pelanggan_id') == $p->id ? 'selected' : '' }}>
+                                    <option value="{{ $p->pelanggan_id }}" {{ request('pelanggan_id') == $p->pelanggan_id ? 'selected' : '' }}>
                                         {{ $p->user->name }}
                                     </option>
                                 @endforeach

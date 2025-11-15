@@ -16,7 +16,7 @@ class TagihanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Tagihan::with(['pelanggan.user', 'paket']);
+        $query = Tagihan::with(['pelanggan', 'paket']);
 
         // Filter berdasarkan status
         if ($request->filled('status')) {
@@ -34,7 +34,18 @@ class TagihanController extends Controller
         }
 
         $tagihan = $query->latest()->paginate(15);
-        $pelanggan = Pelanggan::where('status', 'aktif')->with('user')->get();
+        
+        // Load user untuk setiap pelanggan secara manual
+        foreach ($tagihan as $t) {
+            if ($t->pelanggan) {
+                $t->pelanggan->user = $t->pelanggan->getUser();
+            }
+        }
+        
+        $pelanggan = Pelanggan::where('status', 'aktif')->get();
+        foreach ($pelanggan as $p) {
+            $p->user = $p->getUser();
+        }
 
         return view('admin.tagihan.index', compact('tagihan', 'pelanggan'));
     }
@@ -44,7 +55,11 @@ class TagihanController extends Controller
      */
     public function create()
     {
-        $pelanggan = Pelanggan::where('status', 'aktif')->with(['user', 'paket'])->get();
+        $pelanggan = Pelanggan::where('status', 'aktif')->get();
+        foreach ($pelanggan as $p) {
+            $p->user = $p->getUser();
+            $p->paket = $p->getPaket();
+        }
         $paket = Paket::where('status', 'aktif')->get();
         
         return view('admin.tagihan.create', compact('pelanggan', 'paket'));
@@ -56,7 +71,7 @@ class TagihanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'pelanggan_id' => 'required|exists:pelanggan,id',
+            'pelanggan_id' => 'required|exists:pelanggan,pelanggan_id',
             'paket_id' => 'required|exists:paket,id',
             'bulan' => 'required|integer|min:1|max:12',
             'tahun' => 'required|integer|min:2020|max:2100',
@@ -90,7 +105,10 @@ class TagihanController extends Controller
      */
     public function show(Tagihan $tagihan)
     {
-        $tagihan->load(['pelanggan.user', 'paket', 'pembayaran']);
+        $tagihan->load(['pelanggan', 'paket', 'pembayaran']);
+        if ($tagihan->pelanggan) {
+            $tagihan->pelanggan->user = $tagihan->pelanggan->getUser();
+        }
         return view('admin.tagihan.show', compact('tagihan'));
     }
 
@@ -99,9 +117,16 @@ class TagihanController extends Controller
      */
     public function edit(Tagihan $tagihan)
     {
-        $pelanggan = Pelanggan::where('status', 'aktif')->with(['user', 'paket'])->get();
+        $pelanggan = Pelanggan::where('status', 'aktif')->get();
+        foreach ($pelanggan as $p) {
+            $p->user = $p->getUser();
+            $p->paket = $p->getPaket();
+        }
         $paket = Paket::where('status', 'aktif')->get();
         $tagihan->load(['pelanggan', 'paket']);
+        if ($tagihan->pelanggan) {
+            $tagihan->pelanggan->user = $tagihan->pelanggan->getUser();
+        }
         
         return view('admin.tagihan.edit', compact('tagihan', 'pelanggan', 'paket'));
     }
@@ -112,7 +137,7 @@ class TagihanController extends Controller
     public function update(Request $request, Tagihan $tagihan)
     {
         $validated = $request->validate([
-            'pelanggan_id' => 'required|exists:pelanggan,id',
+            'pelanggan_id' => 'required|exists:pelanggan,pelanggan_id',
             'paket_id' => 'required|exists:paket,id',
             'bulan' => 'required|integer|min:1|max:12',
             'tahun' => 'required|integer|min:2020|max:2100',

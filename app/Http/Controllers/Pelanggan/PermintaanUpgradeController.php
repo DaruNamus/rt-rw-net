@@ -17,14 +17,14 @@ class PermintaanUpgradeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
                 ->with('error', 'Data pelanggan tidak ditemukan.');
         }
 
-        $permintaanUpgrade = PermintaanUpgrade::where('pelanggan_id', $pelanggan->id)
+        $permintaanUpgrade = PermintaanUpgrade::where('pelanggan_id', $pelanggan->pelanggan_id)
             ->with(['paketLama', 'paketBaru', 'diprosesOleh'])
             ->latest()
             ->paginate(15);
@@ -38,7 +38,7 @@ class PermintaanUpgradeController extends Controller
     public function create()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->with('paket')->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
@@ -51,7 +51,7 @@ class PermintaanUpgradeController extends Controller
             ->get();
 
         // Cek apakah ada permintaan upgrade yang masih menunggu
-        $permintaanMenunggu = PermintaanUpgrade::where('pelanggan_id', $pelanggan->id)
+        $permintaanMenunggu = PermintaanUpgrade::where('pelanggan_id', $pelanggan->pelanggan_id)
             ->where('status', 'menunggu')
             ->exists();
 
@@ -64,7 +64,7 @@ class PermintaanUpgradeController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::where('user_id', $user->id)->first();
+        $pelanggan = Pelanggan::findByUserId($user->id);
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
@@ -79,7 +79,7 @@ class PermintaanUpgradeController extends Controller
         ]);
 
         // Cek apakah ada permintaan upgrade yang masih menunggu
-        $permintaanMenunggu = PermintaanUpgrade::where('pelanggan_id', $pelanggan->id)
+        $permintaanMenunggu = PermintaanUpgrade::where('pelanggan_id', $pelanggan->pelanggan_id)
             ->where('status', 'menunggu')
             ->exists();
 
@@ -91,7 +91,7 @@ class PermintaanUpgradeController extends Controller
 
         // Buat permintaan upgrade
         PermintaanUpgrade::create([
-            'pelanggan_id' => $pelanggan->id,
+            'pelanggan_id' => $pelanggan->pelanggan_id,
             'paket_lama_id' => $pelanggan->paket_id,
             'paket_baru_id' => $validated['paket_baru_id'],
             'status' => 'menunggu',

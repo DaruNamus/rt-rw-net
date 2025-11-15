@@ -56,8 +56,8 @@
                                     <div class="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                                         <div class="flex justify-between items-start">
                                             <div>
-                                                <p class="font-medium text-gray-900">{{ $pembayaran->pelanggan->user->name }}</p>
-                                                <p class="text-sm text-gray-500">Tagihan: {{ $pembayaran->tagihan->jenis_tagihan }}</p>
+                                                <p class="font-medium text-gray-900">{{ $pembayaran->pelanggan && $pembayaran->pelanggan->user ? $pembayaran->pelanggan->user->name : 'N/A' }}</p>
+                                                <p class="text-sm text-gray-500">Tagihan: {{ $pembayaran->tagihan ? $pembayaran->tagihan->jenis_tagihan : 'N/A' }}</p>
                                                 <p class="text-sm text-gray-500">Jumlah: Rp {{ number_format($pembayaran->jumlah_bayar, 0, ',', '.') }}</p>
                                             </div>
                                             <a href="{{ route('admin.pembayaran.show', $pembayaran) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
@@ -88,8 +88,8 @@
                                     <div class="border-b border-gray-200 pb-4 last:border-b-0 last:pb-0">
                                         <div class="flex justify-between items-start">
                                             <div>
-                                                <p class="font-medium text-gray-900">{{ $permintaan->pelanggan->user->name }}</p>
-                                                <p class="text-sm text-gray-500">{{ $permintaan->paketLama->nama_paket }} → {{ $permintaan->paketBaru->nama_paket }}</p>
+                                                <p class="font-medium text-gray-900">{{ $permintaan->pelanggan && $permintaan->pelanggan->user ? $permintaan->pelanggan->user->name : 'N/A' }}</p>
+                                                <p class="text-sm text-gray-500">{{ $permintaan->paketLama ? $permintaan->paketLama->nama_paket : 'N/A' }} → {{ $permintaan->paketBaru ? $permintaan->paketBaru->nama_paket : 'N/A' }}</p>
                                                 <p class="text-xs text-gray-400">{{ $permintaan->created_at->format('d M Y') }}</p>
                                             </div>
                                             <a href="{{ route('admin.permintaan-upgrade.show', $permintaan) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
