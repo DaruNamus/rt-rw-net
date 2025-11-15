@@ -1,66 +1,321 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Manajemen RT-RW Net
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem manajemen RT-RW Net berbasis Laravel untuk mengelola pelanggan, paket internet, tagihan, dan pembayaran secara terintegrasi.
 
-## About Laravel
+## 📋 Deskripsi
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Sistem ini dirancang untuk membantu pengelola RT-RW Net dalam mengelola:
+- Data pelanggan dan paket internet
+- Tagihan bulanan otomatis
+- Pembayaran dan verifikasi
+- Permintaan upgrade paket
+- Monitoring dan laporan
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 👨‍💼 Panel Admin
+- **Manajemen Paket Internet**
+  - CRUD paket (nama, harga bulanan, harga pemasangan, kecepatan)
+  - Status aktif/nonaktif paket
+  
+- **Manajemen Pelanggan**
+  - Buat akun pelanggan baru beserta paketnya
+  - Edit dan hapus data pelanggan
+  - Auto-generate tagihan pemasangan pertama
+  
+- **Manajemen Tagihan**
+  - Buat tagihan manual (bulanan, upgrade, pemasangan)
+  - Filter tagihan berdasarkan status, jenis, dan pelanggan
+  - Monitoring tagihan belum bayar
+  
+- **Verifikasi Pembayaran**
+  - Lihat bukti pembayaran yang diupload pelanggan
+  - Verifikasi dan konfirmasi pembayaran
+  - Tolak pembayaran dengan catatan
+  
+- **Kelola Permintaan Upgrade**
+  - Lihat permintaan upgrade paket dari pelanggan
+  - Setujui/tolak permintaan upgrade
+  - Auto-generate tagihan upgrade saat disetujui
 
-## Learning Laravel
+### 👤 Panel Pelanggan
+- **Dashboard**
+  - Lihat tagihan bulan ini
+  - Total tagihan belum bayar
+  - Riwayat pembayaran terbaru
+  
+- **Tagihan**
+  - Lihat semua tagihan (bulanan, upgrade, pemasangan)
+  - Detail tagihan per item
+  
+- **Pembayaran**
+  - Upload bukti pembayaran
+  - Lihat status pembayaran (menunggu verifikasi, lunas, ditolak)
+  - Riwayat pembayaran
+  
+- **Permintaan Upgrade Paket**
+  - Request upgrade/downgrade paket
+  - Lihat status permintaan
+  - Riwayat permintaan upgrade
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Teknologi yang Digunakan
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Backend Framework**: Laravel 11
+- **Frontend**: 
+  - Blade Templates
+  - Tailwind CSS
+  - Alpine.js
+- **Database**: MySQL
+- **PHP Version**: ^8.2
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📦 Instalasi
 
-## Laravel Sponsors
+### Prasyarat
+- PHP >= 8.2
+- Composer
+- Node.js & NPM
+- MySQL
+- Web Server (Apache/Nginx) atau Laragon/XAMPP
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Langkah Instalasi
 
-### Premium Partners
+1. **Clone Repository**
+   ```bash
+   git clone <repository-url>
+   cd rt-rw-net-v2backup
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+2. **Install Dependencies**
+   ```bash
+   # Install PHP dependencies
+   composer install
+   
+   # Install Node dependencies
+   npm install
+   ```
 
-## Contributing
+3. **Konfigurasi Environment**
+   ```bash
+   # Copy file .env
+   cp .env.example .env
+   
+   # Generate application key
+   php artisan key:generate
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+4. **Konfigurasi Database**
+   
+   Edit file `.env` dan sesuaikan konfigurasi database:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=rtrwnetv3
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-## Code of Conduct
+5. **Jalankan Migrasi**
+   ```bash
+   php artisan migrate
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   Atau jika ingin menggunakan data sample dari file SQL:
+   ```bash
+   # Import database dari file rtrwnetv3.sql
+   mysql -u root -p rtrwnetv3 < rtrwnetv3.sql
+   ```
 
-## Security Vulnerabilities
+6. **Build Assets**
+   ```bash
+   npm run build
+   # atau untuk development
+   npm run dev
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. **Jalankan Server**
+   ```bash
+   php artisan serve
+   ```
 
-## License
+   Aplikasi akan berjalan di `http://localhost:8000`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 👥 User Default
+
+Setelah import database, gunakan kredensial berikut:
+
+**Admin:**
+- Email: `admin@gmail.com`
+- Password: `password` (atau sesuai yang ada di database)
+
+**Pelanggan:**
+- Email: `farith@gmail.com`
+- Password: `password` (atau sesuai yang ada di database)
+
+> ⚠️ **Penting**: Ganti password default setelah instalasi pertama!
+
+## 🗄️ Struktur Database
+
+### Tabel Utama
+
+- **users**: Data user (admin & pelanggan)
+- **pelanggan**: Data pelanggan dengan `pelanggan_id` sebagai primary key
+  - Format `pelanggan_id`: `[id][user_id][paket_id]` (contoh: "122")
+- **paket**: Paket internet yang tersedia
+- **tagihan**: Tagihan (bulanan, upgrade, pemasangan)
+- **pembayaran**: Data pembayaran dengan bukti upload
+- **permintaan_upgrade**: Permintaan upgrade/downgrade paket
+
+### Format Pelanggan ID
+
+Sistem menggunakan format khusus untuk `pelanggan_id`:
+- **Format**: `[id][user_id][paket_id]`
+- **Contoh**: 
+  - `"122"` = ID pelanggan 1, User ID 2, Paket ID 2
+  - `"231"` = ID pelanggan 2, User ID 3, Paket ID 1
+
+> **Catatan**: Format ini memungkinkan maksimal 9 untuk masing-masing ID (1 digit per bagian).
+
+## 🔐 Autentikasi & Authorization
+
+Sistem menggunakan 2 role:
+- **Admin**: Akses penuh ke semua fitur
+- **Pelanggan**: Hanya akses ke fitur pelanggan
+
+Middleware:
+- `EnsureUserIsAdmin`: Membatasi akses hanya untuk admin
+- `EnsureUserIsPelanggan`: Membatasi akses hanya untuk pelanggan
+
+## 📝 Alur Kerja
+
+### 1. Pemasangan Baru
+1. Admin membuat akun pelanggan baru dan memilih paket
+2. Sistem otomatis membuat tagihan pemasangan (harga pemasangan + harga paket)
+3. Pelanggan melakukan pemasangan
+4. Admin menandai tagihan pemasangan sebagai lunas
+
+### 2. Tagihan Bulanan
+1. Admin membuat tagihan bulanan (atau otomatis via scheduler)
+2. Pelanggan melihat tagihan di dashboard
+3. Pelanggan upload bukti pembayaran
+4. Admin verifikasi pembayaran
+5. Status tagihan otomatis menjadi "lunas" setelah verifikasi
+
+### 3. Upgrade Paket
+1. Pelanggan request upgrade paket melalui panel
+2. Admin review permintaan
+3. Admin setujui/tolak permintaan
+4. Jika disetujui:
+   - Sistem update paket pelanggan
+   - Generate `pelanggan_id` baru
+   - Buat tagihan upgrade (selisih harga bulanan)
+
+## 🚀 Penggunaan
+
+### Untuk Admin
+
+1. **Login** dengan kredensial admin
+2. **Dashboard**: Lihat statistik dan notifikasi
+3. **Manajemen Paket**: Kelola paket internet
+4. **Manajemen Pelanggan**: Tambah/edit pelanggan
+5. **Tagihan**: Buat dan kelola tagihan
+6. **Pembayaran**: Verifikasi pembayaran pelanggan
+7. **Permintaan Upgrade**: Kelola permintaan upgrade
+
+### Untuk Pelanggan
+
+1. **Login** dengan kredensial pelanggan
+2. **Dashboard**: Lihat tagihan dan status
+3. **Tagihan**: Lihat semua tagihan
+4. **Pembayaran**: Upload bukti pembayaran
+5. **Permintaan Upgrade**: Request upgrade paket
+
+## 🔧 Konfigurasi Tambahan
+
+### Storage Link (untuk upload file)
+```bash
+php artisan storage:link
+```
+
+### Clear Cache
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+```
+
+### Optimize
+```bash
+php artisan optimize
+```
+
+## 📁 Struktur Project
+
+```
+rt-rw-net-v2backup/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Admin/          # Controller untuk admin
+│   │   │   └── Pelanggan/      # Controller untuk pelanggan
+│   │   └── Middleware/          # Middleware untuk auth
+│   └── Models/                  # Eloquent models
+├── database/
+│   ├── migrations/              # Database migrations
+│   └── database.sqlite          # SQLite (opsional)
+├── resources/
+│   ├── views/                   # Blade templates
+│   │   ├── admin/               # Views untuk admin
+│   │   └── pelanggan/           # Views untuk pelanggan
+│   ├── css/                     # CSS files
+│   └── js/                      # JavaScript files
+├── routes/
+│   ├── web.php                  # Web routes
+│   └── auth.php                 # Auth routes
+├── public/                      # Public assets
+└── storage/                     # Storage untuk upload
+```
+
+## 🐛 Troubleshooting
+
+### Error: "Call to undefined relationship [user]"
+- Pastikan tidak menggunakan eager loading `pelanggan.user`
+- Gunakan `pelanggan` saja, lalu load user secara manual dengan `getUser()`
+
+### Error: "Pelanggan ID sudah mencapai batas maksimal"
+- Format `pelanggan_id` menggunakan 1 digit per bagian
+- Maksimal 9 pelanggan dengan user_id dan paket_id yang sama
+- Pertimbangkan upgrade ke format multi-digit jika diperlukan
+
+### Error saat migrasi
+- Pastikan database sudah dibuat
+- Pastikan kredensial database di `.env` benar
+- Backup database sebelum migrasi
+
+## 📄 License
+
+MIT License
+
+## 👨‍💻 Kontribusi
+
+Kontribusi sangat diterima! Silakan:
+1. Fork repository
+2. Buat branch untuk fitur baru (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+## 📞 Support
+
+Untuk pertanyaan atau bantuan, silakan buat issue di repository ini.
+
+## 🙏 Acknowledgments
+
+- Laravel Framework
+- Tailwind CSS
+- Alpine.js
+- Semua kontributor
+
+---
+
+**Dibuat dengan ❤️ untuk memudahkan pengelolaan RT-RW Net**
