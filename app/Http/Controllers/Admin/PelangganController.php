@@ -48,7 +48,7 @@ class PelangganController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'paket_id' => 'required|exists:paket,id',
+            'paket_id' => 'required|exists:paket,paket_id',
             'alamat' => 'required|string',
             'no_telepon' => 'required|string|max:20',
             'tanggal_pemasangan' => 'required|date',
@@ -57,16 +57,17 @@ class PelangganController extends Controller
 
         DB::beginTransaction();
         try {
-            // Buat user baru
+            // Buat user baru dengan generate user_id
             $user = User::create([
+                'user_id' => User::generateUserId(),
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'role' => 'pelanggan',
             ]);
 
-            // Generate pelanggan_id
-            $pelangganId = Pelanggan::generatePelangganId($user->id, $validated['paket_id']);
+            // Generate pelanggan_id dengan format baru: PLG001-USR1-PKT1
+            $pelangganId = Pelanggan::generatePelangganId($user->user_id, $validated['paket_id']);
 
             // Buat data pelanggan
             $pelanggan = Pelanggan::create([
@@ -78,10 +79,11 @@ class PelangganController extends Controller
             ]);
 
             // Buat tagihan pemasangan pertama
-            $paket = Paket::find($validated['paket_id']);
+            $paket = Paket::find($validated['paket_id']); // paket_id sudah format PKT1, dst
             $totalTagihan = $paket->harga_pemasangan + $paket->harga_bulanan;
             
             Tagihan::create([
+                'tagihan_id' => Tagihan::generateTagihanId(),
                 'pelanggan_id' => $pelanggan->pelanggan_id,
                 'paket_id' => $validated['paket_id'],
                 'bulan' => Carbon::parse($validated['tanggal_pemasangan'])->month,
@@ -135,9 +137,9 @@ class PelangganController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $pelanggan->user_id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $pelanggan->user_id . ',user_id',
             'password' => 'nullable|string|min:8|confirmed',
-            'paket_id' => 'required|exists:paket,id',
+            'paket_id' => 'required|exists:paket,paket_id',
             'alamat' => 'required|string',
             'no_telepon' => 'required|string|max:20',
             'tanggal_pemasangan' => 'required|date',
@@ -161,10 +163,10 @@ class PelangganController extends Controller
 
             $user->update($userData);
 
-            // Jika paket berubah, generate pelanggan_id baru
+            // Jika paket berubah, generate pelanggan_id baru dengan format baru
             $paketLama = $pelanggan->paket_id;
             if ($paketLama != $validated['paket_id']) {
-                $pelangganIdBaru = Pelanggan::generatePelangganId($user->id, $validated['paket_id']);
+                $pelangganIdBaru = Pelanggan::generatePelangganId($user->user_id, $validated['paket_id']);
                 $pelanggan->update([
                     'pelanggan_id' => $pelangganIdBaru,
                     'alamat' => $validated['alamat'],

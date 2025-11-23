@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PermintaanUpgrade;
+use App\Models\Pelanggan;
 use App\Models\Tagihan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,7 +68,7 @@ class PermintaanUpgradeController extends Controller
             $user = $pelanggan->getUser();
             
             // Generate pelanggan_id baru karena paket berubah
-            $pelangganIdBaru = Pelanggan::generatePelangganId($user->id, $permintaanUpgrade->paket_baru_id);
+            $pelangganIdBaru = Pelanggan::generatePelangganId($user->user_id, $permintaanUpgrade->paket_baru_id);
             
             $pelanggan->update([
                 'pelanggan_id' => $pelangganIdBaru,
@@ -82,6 +83,7 @@ class PermintaanUpgradeController extends Controller
             $tahunSekarang = now()->year;
             
             Tagihan::create([
+                'tagihan_id' => Tagihan::generateTagihanId(),
                 'pelanggan_id' => $pelanggan->pelanggan_id,
                 'paket_id' => $permintaanUpgrade->paket_baru_id,
                 'bulan' => $bulanSekarang,
@@ -96,7 +98,7 @@ class PermintaanUpgradeController extends Controller
             // Update status permintaan upgrade
             $permintaanUpgrade->update([
                 'status' => 'disetujui',
-                'diproses_oleh' => Auth::id(),
+                'diproses_oleh' => Auth::user()->user_id,
                 'diproses_pada' => now(),
                 'catatan_admin' => $request->catatan_admin,
             ]);
@@ -128,7 +130,7 @@ class PermintaanUpgradeController extends Controller
             // Update status permintaan upgrade
             $permintaanUpgrade->update([
                 'status' => 'ditolak',
-                'diproses_oleh' => Auth::id(),
+                'diproses_oleh' => Auth::user()->user_id,
                 'diproses_pada' => now(),
                 'catatan_admin' => $request->catatan_admin,
             ]);

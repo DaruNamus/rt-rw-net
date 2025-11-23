@@ -17,7 +17,7 @@ class PermintaanUpgradeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        $pelanggan = Pelanggan::findByUserId($user->user_id ?? Auth::id());
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
@@ -38,7 +38,7 @@ class PermintaanUpgradeController extends Controller
     public function create()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        $pelanggan = Pelanggan::findByUserId($user->user_id ?? Auth::id());
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
@@ -47,7 +47,7 @@ class PermintaanUpgradeController extends Controller
 
         // Ambil paket yang tersedia (kecuali paket yang sedang digunakan)
         $paket = Paket::where('status', 'aktif')
-            ->where('id', '!=', $pelanggan->paket_id)
+            ->where('paket_id', '!=', $pelanggan->paket_id)
             ->get();
 
         // Cek apakah ada permintaan upgrade yang masih menunggu
@@ -64,7 +64,7 @@ class PermintaanUpgradeController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        $pelanggan = Pelanggan::findByUserId($user->user_id ?? Auth::id());
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
@@ -72,7 +72,7 @@ class PermintaanUpgradeController extends Controller
         }
 
         $validated = $request->validate([
-            'paket_baru_id' => 'required|exists:paket,id|different:' . $pelanggan->paket_id,
+            'paket_baru_id' => 'required|exists:paket,paket_id|different:' . $pelanggan->paket_id,
             'alasan' => 'nullable|string|max:500',
         ], [
             'paket_baru_id.different' => 'Paket baru harus berbeda dengan paket yang sedang digunakan.',
@@ -91,6 +91,7 @@ class PermintaanUpgradeController extends Controller
 
         // Buat permintaan upgrade
         PermintaanUpgrade::create([
+            'permintaan_upgrade_id' => PermintaanUpgrade::generatePermintaanUpgradeId(),
             'pelanggan_id' => $pelanggan->pelanggan_id,
             'paket_lama_id' => $pelanggan->paket_id,
             'paket_baru_id' => $validated['paket_baru_id'],

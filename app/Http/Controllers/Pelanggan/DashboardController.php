@@ -13,7 +13,18 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        
+        if (!$user) {
+            return redirect()->route('login');
+        }
+        
+        $userId = $user->user_id ?? Auth::id();
+        
+        if (!$userId) {
+            return redirect()->route('login')->with('error', 'Sesi Anda telah berakhir. Silakan login kembali.');
+        }
+        
+        $pelanggan = Pelanggan::findByUserId($userId);
 
         if (!$pelanggan) {
             return redirect()->route('profile.edit')->with('error', 'Data pelanggan tidak ditemukan. Silakan hubungi admin untuk melengkapi data pelanggan Anda.');

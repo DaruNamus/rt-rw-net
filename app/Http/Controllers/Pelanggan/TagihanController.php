@@ -16,7 +16,7 @@ class TagihanController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        $pelanggan = Pelanggan::findByUserId($user->user_id ?? Auth::id());
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
@@ -37,7 +37,7 @@ class TagihanController extends Controller
     public function show(Tagihan $tagihan)
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        $pelanggan = Pelanggan::findByUserId($user->user_id ?? Auth::id());
 
         if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->pelanggan_id) {
             return redirect()->route('pelanggan.tagihan.index')

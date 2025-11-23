@@ -9,7 +9,12 @@ class Pembayaran extends Model
 {
     protected $table = 'pembayaran';
 
+    protected $primaryKey = 'pembayaran_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
+        'pembayaran_id',
         'tagihan_id',
         'pelanggan_id',
         'jumlah_bayar',
@@ -20,6 +25,24 @@ class Pembayaran extends Model
         'diverifikasi_oleh',
         'diverifikasi_pada',
     ];
+
+    /**
+     * Generate pembayaran_id baru
+     * Format: BYR1, BYR2, BYR3, ...
+     */
+    public static function generatePembayaranId(): string
+    {
+        // Ambil pembayaran_id terakhir
+        $lastPembayaran = static::orderBy('pembayaran_id', 'desc')->first();
+        
+        if ($lastPembayaran && preg_match('/BYR(\d+)/', $lastPembayaran->pembayaran_id, $matches)) {
+            $nextNumber = (int) $matches[1] + 1;
+        } else {
+            $nextNumber = 1;
+        }
+        
+        return 'BYR' . $nextNumber;
+    }
 
     protected function casts(): array
     {
@@ -32,7 +55,7 @@ class Pembayaran extends Model
 
     public function tagihan(): BelongsTo
     {
-        return $this->belongsTo(Tagihan::class);
+        return $this->belongsTo(Tagihan::class, 'tagihan_id', 'tagihan_id');
     }
 
     public function pelanggan(): BelongsTo
@@ -42,6 +65,6 @@ class Pembayaran extends Model
 
     public function diverifikasiOleh(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'diverifikasi_oleh');
+        return $this->belongsTo(User::class, 'diverifikasi_oleh', 'user_id');
     }
 }

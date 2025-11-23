@@ -18,7 +18,7 @@ class PembayaranController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        $pelanggan = Pelanggan::findByUserId($user->user_id ?? Auth::id());
 
         if (!$pelanggan) {
             return redirect()->route('pelanggan.dashboard')
@@ -39,7 +39,7 @@ class PembayaranController extends Controller
     public function create(Tagihan $tagihan)
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        $pelanggan = Pelanggan::findByUserId($user->user_id ?? Auth::id());
 
         if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->pelanggan_id) {
             return redirect()->route('pelanggan.tagihan.index')
@@ -63,7 +63,7 @@ class PembayaranController extends Controller
     public function store(Request $request, Tagihan $tagihan)
     {
         $user = Auth::user();
-        $pelanggan = Pelanggan::findByUserId($user->id);
+        $pelanggan = Pelanggan::findByUserId($user->user_id ?? Auth::id());
 
         if (!$pelanggan || $tagihan->pelanggan_id !== $pelanggan->pelanggan_id) {
             return redirect()->route('pelanggan.tagihan.index')
@@ -85,7 +85,8 @@ class PembayaranController extends Controller
 
         // Buat pembayaran
         Pembayaran::create([
-            'tagihan_id' => $tagihan->id,
+            'pembayaran_id' => Pembayaran::generatePembayaranId(),
+            'tagihan_id' => $tagihan->tagihan_id,
             'pelanggan_id' => $pelanggan->pelanggan_id,
             'jumlah_bayar' => $validated['jumlah_bayar'],
             'tanggal_bayar' => $validated['tanggal_bayar'],

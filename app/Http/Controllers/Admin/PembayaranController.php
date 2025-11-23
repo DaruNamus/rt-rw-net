@@ -65,7 +65,7 @@ class PembayaranController extends Controller
             // Update status pembayaran
             $pembayaran->update([
                 'status' => 'lunas',
-                'diverifikasi_oleh' => Auth::id(),
+                'diverifikasi_oleh' => Auth::user()->user_id,
                 'diverifikasi_pada' => now(),
                 'catatan_admin' => $request->catatan_admin,
             ]);
@@ -103,7 +103,7 @@ class PembayaranController extends Controller
             // Update status pembayaran
             $pembayaran->update([
                 'status' => 'ditolak',
-                'diverifikasi_oleh' => Auth::id(),
+                'diverifikasi_oleh' => Auth::user()->user_id,
                 'diverifikasi_pada' => now(),
                 'catatan_admin' => $request->catatan_admin,
             ]);

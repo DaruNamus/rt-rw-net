@@ -40,7 +40,10 @@ class PaketController extends Controller
             'status' => 'required|in:aktif,tidak_aktif',
         ]);
 
-        Paket::create($validated);
+        Paket::create([
+            'paket_id' => Paket::generatePaketId(),
+            ...$validated
+        ]);
 
         return redirect()->route('admin.paket.index')
             ->with('success', 'Paket berhasil ditambahkan.');
@@ -87,10 +90,27 @@ class PaketController extends Controller
      */
     public function destroy(Paket $paket)
     {
-        // Cek apakah paket sedang digunakan
-        if ($paket->pelanggan()->count() > 0) {
+        // Cek apakah paket sedang digunakan oleh pelanggan
+        $pelanggan = $paket->getPelanggan();
+        if ($pelanggan->count() > 0) {
             return redirect()->route('admin.paket.index')
                 ->with('error', 'Paket tidak dapat dihapus karena sedang digunakan oleh pelanggan.');
+        }
+
+        // Cek apakah paket sedang digunakan di tagihan
+        if ($paket->tagihan()->count() > 0) {
+            return redirect()->route('admin.paket.index')
+                ->with('error', 'Paket tidak dapat dihapus karena sedang digunakan di tagihan.');
+        }
+
+        // Cek apakah paket sedang digunakan di permintaan upgrade
+        $permintaanUpgrade = \App\Models\PermintaanUpgrade::where('paket_lama_id', $paket->paket_id)
+            ->orWhere('paket_baru_id', $paket->paket_id)
+            ->count();
+            
+        if ($permintaanUpgrade > 0) {
+            return redirect()->route('admin.paket.index')
+                ->with('error', 'Paket tidak dapat dihapus karena sedang digunakan di permintaan upgrade.');
         }
 
         $paket->delete();

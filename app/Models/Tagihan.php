@@ -10,7 +10,12 @@ class Tagihan extends Model
 {
     protected $table = 'tagihan';
 
+    protected $primaryKey = 'tagihan_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
+        'tagihan_id',
         'pelanggan_id',
         'paket_id',
         'bulan',
@@ -21,6 +26,24 @@ class Tagihan extends Model
         'jenis_tagihan',
         'keterangan',
     ];
+
+    /**
+     * Generate tagihan_id baru
+     * Format: TGH1, TGH2, TGH3, ...
+     */
+    public static function generateTagihanId(): string
+    {
+        // Ambil tagihan_id terakhir
+        $lastTagihan = static::orderBy('tagihan_id', 'desc')->first();
+        
+        if ($lastTagihan && preg_match('/TGH(\d+)/', $lastTagihan->tagihan_id, $matches)) {
+            $nextNumber = (int) $matches[1] + 1;
+        } else {
+            $nextNumber = 1;
+        }
+        
+        return 'TGH' . $nextNumber;
+    }
 
     protected function casts(): array
     {
@@ -37,11 +60,11 @@ class Tagihan extends Model
 
     public function paket(): BelongsTo
     {
-        return $this->belongsTo(Paket::class);
+        return $this->belongsTo(Paket::class, 'paket_id', 'paket_id');
     }
 
     public function pembayaran(): HasMany
     {
-        return $this->hasMany(Pembayaran::class);
+        return $this->hasMany(Pembayaran::class, 'tagihan_id', 'tagihan_id');
     }
 }

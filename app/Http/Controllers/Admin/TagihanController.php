@@ -72,7 +72,7 @@ class TagihanController extends Controller
     {
         $validated = $request->validate([
             'pelanggan_id' => 'required|exists:pelanggan,pelanggan_id',
-            'paket_id' => 'required|exists:paket,id',
+            'paket_id' => 'required|exists:paket,paket_id',
             'bulan' => 'required|integer|min:1|max:12',
             'tahun' => 'required|integer|min:2020|max:2100',
             'jumlah_tagihan' => 'required|numeric|min:0',
@@ -94,7 +94,10 @@ class TagihanController extends Controller
                 ->with('error', 'Tagihan untuk bulan dan tahun tersebut sudah ada.');
         }
 
-        Tagihan::create($validated);
+        Tagihan::create([
+            'tagihan_id' => Tagihan::generateTagihanId(),
+            ...$validated
+        ]);
 
         return redirect()->route('admin.tagihan.index')
             ->with('success', 'Tagihan berhasil ditambahkan.');
@@ -138,7 +141,7 @@ class TagihanController extends Controller
     {
         $validated = $request->validate([
             'pelanggan_id' => 'required|exists:pelanggan,pelanggan_id',
-            'paket_id' => 'required|exists:paket,id',
+            'paket_id' => 'required|exists:paket,paket_id',
             'bulan' => 'required|integer|min:1|max:12',
             'tahun' => 'required|integer|min:2020|max:2100',
             'jumlah_tagihan' => 'required|numeric|min:0',
@@ -153,7 +156,7 @@ class TagihanController extends Controller
             ->where('bulan', $validated['bulan'])
             ->where('tahun', $validated['tahun'])
             ->where('jenis_tagihan', $validated['jenis_tagihan'])
-            ->where('id', '!=', $tagihan->id)
+            ->where('tagihan_id', '!=', $tagihan->tagihan_id)
             ->first();
 
         if ($existingTagihan) {
