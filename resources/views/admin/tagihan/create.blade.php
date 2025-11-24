@@ -39,7 +39,7 @@
                                 <select id="paket_id" name="paket_id" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                                     <option value="">Pilih Paket</option>
                                     @foreach($paket as $p)
-                                        <option value="{{ $p->id }}" {{ old('paket_id') == $p->id ? 'selected' : '' }}>
+                                        <option value="{{ $p->paket_id }}" {{ old('paket_id') == $p->paket_id ? 'selected' : '' }}>
                                             {{ $p->nama_paket }} - Rp {{ number_format($p->harga_bulanan, 0, ',', '.') }}/bulan
                                         </option>
                                     @endforeach

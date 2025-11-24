@@ -1,0 +1,20 @@
+{
+    "0001_01_01_000000_create_users_table": 1,
+    "0001_01_01_000001_create_cache_table": 2,
+    "0001_01_01_000002_create_jobs_table": 3,
+    "2025_11_06_204638_create_paket_table": 4,
+    "2025_11_06_204640_create_pelanggan_table": 5,
+    "2025_11_06_204642_create_tagihan_table": 6,
+    "2025_11_06_204644_create_pembayaran_table": 7,
+    "2025_11_06_204646_create_permintaan_upgrade_table": 8,
+    "2025_11_15_061604_add_pelanggan_id_to_pelanggan_table": 9,
+    "2025_11_15_061614_update_foreign_keys_for_pelanggan_id": 10,
+    "2025_11_15_062203_fix_pelanggan_primary_key": 11,
+    "2025_11_23_090058_change_users_id_to_user_id_format": 12,
+    "2025_11_23_091618_change_paket_id_to_paket_id_format": 13,
+    "2025_11_23_092903_change_pelanggan_id_to_new_format": 14,
+    "2025_11_23_094337_remove_pelanggan_id_new_column": 15,
+    "2025_11_23_094537_change_tagihan_id_to_tagihan_id_format": 16,
+    "2025_11_23_095004_change_pembayaran_id_to_pembayaran_id_format": 17,
+    "2025_11_23_095247_change_permintaan_upgrade_id_to_permintaan_upgrade_id_format": 18
+}
