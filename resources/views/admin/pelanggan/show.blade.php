@@ -93,7 +93,7 @@
                                 @endforeach
                             </div>
                             <div class="mt-4">
-                                <a href="{{ route('admin.tagihan.index', ['pelanggan_id' => $pelanggan->id]) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                <a href="{{ route('admin.tagihan.index', ['pelanggan_id' => $pelanggan->pelanggan_id]) }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                                     Lihat Semua Tagihan →
                                 </a>
                             </div>
