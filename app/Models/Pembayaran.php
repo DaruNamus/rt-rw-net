@@ -32,8 +32,8 @@ class Pembayaran extends Model
      */
     public static function generatePembayaranId(): string
     {
-        // Ambil pembayaran_id terakhir
-        $lastPembayaran = static::orderBy('pembayaran_id', 'desc')->first();
+        // Ambil pembayaran_id terakhir berdasarkan nilai numeriknya
+        $lastPembayaran = static::orderByRaw('CAST(SUBSTRING(pembayaran_id, 4) AS UNSIGNED) DESC')->first();
         
         if ($lastPembayaran && preg_match('/BYR(\d+)/', $lastPembayaran->pembayaran_id, $matches)) {
             $nextNumber = (int) $matches[1] + 1;

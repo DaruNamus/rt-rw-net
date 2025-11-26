@@ -31,8 +31,8 @@ class PermintaanUpgrade extends Model
      */
     public static function generatePermintaanUpgradeId(): string
     {
-        // Ambil permintaan_upgrade_id terakhir
-        $lastPermintaanUpgrade = static::orderBy('permintaan_upgrade_id', 'desc')->first();
+        // Ambil permintaan_upgrade_id terakhir berdasarkan nilai numeriknya
+        $lastPermintaanUpgrade = static::orderByRaw('CAST(SUBSTRING(permintaan_upgrade_id, 4) AS UNSIGNED) DESC')->first();
         
         if ($lastPermintaanUpgrade && preg_match('/UPG(\d+)/', $lastPermintaanUpgrade->permintaan_upgrade_id, $matches)) {
             $nextNumber = (int) $matches[1] + 1;

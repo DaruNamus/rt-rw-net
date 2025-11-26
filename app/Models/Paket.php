@@ -29,8 +29,8 @@ class Paket extends Model
      */
     public static function generatePaketId(): string
     {
-        // Ambil paket_id terakhir
-        $lastPaket = static::orderBy('paket_id', 'desc')->first();
+        // Ambil paket_id terakhir berdasarkan nilai numeriknya
+        $lastPaket = static::orderByRaw('CAST(SUBSTRING(paket_id, 4) AS UNSIGNED) DESC')->first();
         
         if ($lastPaket && preg_match('/PKT(\d+)/', $lastPaket->paket_id, $matches)) {
             $nextNumber = (int) $matches[1] + 1;

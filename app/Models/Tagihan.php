@@ -33,8 +33,8 @@ class Tagihan extends Model
      */
     public static function generateTagihanId(): string
     {
-        // Ambil tagihan_id terakhir
-        $lastTagihan = static::orderBy('tagihan_id', 'desc')->first();
+        // Ambil tagihan_id terakhir berdasarkan nilai numeriknya
+        $lastTagihan = static::orderByRaw('CAST(SUBSTRING(tagihan_id, 4) AS UNSIGNED) DESC')->first();
         
         if ($lastTagihan && preg_match('/TGH(\d+)/', $lastTagihan->tagihan_id, $matches)) {
             $nextNumber = (int) $matches[1] + 1;

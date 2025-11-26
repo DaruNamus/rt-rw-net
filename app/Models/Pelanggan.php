@@ -52,8 +52,10 @@ class Pelanggan extends Model
             $paketIdFormatted = 'PKT' . $numericPaketId;
         }
         
-        // Ambil ID terakhir dari pelanggan_id
-        $lastPelanggan = static::orderBy('pelanggan_id', 'desc')->first();
+        // Ambil ID terakhir dari pelanggan_id berdasarkan nilai numeriknya
+        $lastPelanggan = static::orderByRaw(
+            "CAST(SUBSTRING_INDEX(SUBSTRING(pelanggan_id, 4), '-', 1) AS UNSIGNED) DESC"
+        )->first();
         $nextId = 1;
         
         if ($lastPelanggan) {

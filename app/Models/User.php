@@ -34,8 +34,8 @@ class User extends Authenticatable
      */
     public static function generateUserId(): string
     {
-        // Ambil user_id terakhir
-        $lastUser = static::orderBy('user_id', 'desc')->first();
+        // Ambil user_id terakhir berdasarkan nilai numeriknya
+        $lastUser = static::orderByRaw('CAST(SUBSTRING(user_id, 4) AS UNSIGNED) DESC')->first();
         
         if ($lastUser && preg_match('/USR(\d+)/', $lastUser->user_id, $matches)) {
             $nextNumber = (int) $matches[1] + 1;
