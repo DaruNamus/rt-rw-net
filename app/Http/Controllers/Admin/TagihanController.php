@@ -187,4 +187,22 @@ class TagihanController extends Controller
         return redirect()->route('admin.tagihan.index')
             ->with('success', 'Tagihan berhasil dihapus.');
     }
+    /**
+     * Cetak bukti tagihan (khusus untuk tagihan Rp 0 atau yang sudah lunas tanpa pembayaran terpisah)
+     */
+    public function cetak(Tagihan $tagihan)
+    {
+        // Pastikan tagihan lunas dan jumlahnya 0 (karena kalau ada jumlahnya, harus via pembayaran)
+        if ($tagihan->status !== 'lunas' || $tagihan->jumlah_tagihan > 0) {
+            return redirect()->back()
+                ->with('error', 'Fitur ini hanya untuk Tagihan Lunas dengan nominal Rp 0 (misal: Upgrade Paket). Untuk tagihan berbayar, silakan cetak dari riwayat pembayaran.');
+        }
+
+        $tagihan->load(['pelanggan', 'paket']);
+        if ($tagihan->pelanggan) {
+            $tagihan->pelanggan->user = $tagihan->pelanggan->getUser();
+        }
+
+        return view('admin.tagihan.cetak', compact('tagihan'));
+    }
 }

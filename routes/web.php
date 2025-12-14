@@ -32,11 +32,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'admin']
     Route::resource('paket', PaketController::class);
     Route::resource('pelanggan', PelangganController::class);
     Route::resource('tagihan', TagihanController::class);
+    Route::get('/tagihan/{tagihan}/cetak', [TagihanController::class, 'cetak'])->name('tagihan.cetak');
     
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/{pembayaran}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::post('/pembayaran/{pembayaran}/verifikasi', [PembayaranController::class, 'verifikasi'])->name('pembayaran.verifikasi');
     Route::post('/pembayaran/{pembayaran}/tolak', [PembayaranController::class, 'tolak'])->name('pembayaran.tolak');
+    Route::get('/pembayaran/{pembayaran}/cetak', [PembayaranController::class, 'cetak'])->name('pembayaran.cetak');
     
     Route::get('/permintaan-upgrade', [PermintaanUpgradeController::class, 'index'])->name('permintaan-upgrade.index');
     Route::get('/permintaan-upgrade/{permintaanUpgrade}', [PermintaanUpgradeController::class, 'show'])->name('permintaan-upgrade.show');

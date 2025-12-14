@@ -118,4 +118,25 @@ class PembayaranController extends Controller
                 ->with('error', 'Terjadi kesalahan saat menolak pembayaran: ' . $e->getMessage());
         }
     }
+    /**
+     * Cetak struk pembayaran
+     */
+    public function cetak(Pembayaran $pembayaran)
+    {
+        // Pastikan pembayaran sudah lunas
+        if ($pembayaran->status !== 'lunas') {
+            return redirect()->back()
+                ->with('error', 'Hanya pembayaran dengan status LUNAS yang dapat dicetak.');
+        }
+
+        // Load relasi yang dibutuhkan
+        $pembayaran->load(['pelanggan', 'tagihan.paket', 'diverifikasiOleh']);
+        
+        // Helper untuk mendapatkan user object dari pelanggan (karena struktur data legacy)
+        if ($pembayaran->pelanggan) {
+            $pembayaran->pelanggan->user = $pembayaran->pelanggan->getUser();
+        }
+
+        return view('admin.pembayaran.cetak', compact('pembayaran'));
+    }
 }
