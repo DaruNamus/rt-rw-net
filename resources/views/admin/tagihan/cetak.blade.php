@@ -32,7 +32,7 @@
         <!-- Header -->
         <div class="text-center border-b-2 border-gray-800 pb-4 mb-6">
             <h1 class="text-2xl font-bold uppercase tracking-widest text-gray-900">RT-RW Net</h1>
-            <p class="text-sm text-gray-600">Jl. Contoh No. 123, Kelurahan Digital</p>
+            <p class="text-sm text-gray-600">Jl. Drebeg, Margorejo, Kec. Dawe, Kabupaten Kudus, Jawa Tengah 59353</p>
             <p class="text-sm text-gray-600">Telp: 0812-3456-7890</p>
         </div>
 
