@@ -69,10 +69,36 @@ class PermintaanUpgradeController extends Controller
             
             // Generate pelanggan_id baru karena paket berubah
             $pelangganIdBaru = Pelanggan::generatePelangganId($user->user_id, $permintaanUpgrade->paket_baru_id);
+            $pelangganIdLama = $pelanggan->pelanggan_id;
+
+            // MANUAL CASCADE UPDATE
+            // Karena tidak boleh ubah schema DB (ON UPDATE CASCADE), kita lakukan manual di level aplikasi
+            // dengan menonaktifkan FK checks sementara.
             
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            
+            // 1. Update ID Pelanggan
             $pelanggan->update([
                 'pelanggan_id' => $pelangganIdBaru,
             ]);
+
+            // 2. Update Relasi (Tagihan)
+            Tagihan::where('pelanggan_id', $pelangganIdLama)->update(['pelanggan_id' => $pelangganIdBaru]);
+
+            // 3. Update Relasi (Pembayaran)
+            \App\Models\Pembayaran::where('pelanggan_id', $pelangganIdLama)->update(['pelanggan_id' => $pelangganIdBaru]);
+
+            // 4. Update Relasi (Permintaan Upgrade selain yg sedang diproses ini)
+            // Note: $permintaanUpgrade yang sedang diproses relasinya update otomatis karena object loaded? 
+            // Tidak, Eloquent tidak auto update FK di local object jika di database berubah via query lain.
+            // Kita update manual di DB saja.
+            PermintaanUpgrade::where('pelanggan_id', $pelangganIdLama)->update(['pelanggan_id' => $pelangganIdBaru]);
+
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            // Refresh model pelanggan untuk object $permintaanUpgrade
+            $permintaanUpgrade->refresh();
+            // $pelanggan object sudah diupdate via method ->update() diatas, jadi attribute pelanggan_id sudah baru.
 
             // Buat tagihan upgrade
             $paketBaru = $permintaanUpgrade->paketBaru;
